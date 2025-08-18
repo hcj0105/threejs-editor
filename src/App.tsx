@@ -1,5 +1,3 @@
-
-
 import Menu from "./components/Menu";
 import Main from "./components/Main";
 import Properties from "./components/Properties";
