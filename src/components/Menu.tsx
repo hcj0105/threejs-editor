@@ -1,5 +1,5 @@
 import { Menu as AntDMenu } from "antd";
-import { useThreeStore, MeshTypes } from "../store";
+import { useThreeStore } from "../store";
 
 const items = [
 	{
@@ -27,10 +27,10 @@ const items = [
 ];
 
 const Menu = () => {
-	const { data } = useThreeStore();
+	const { addMesh } = useThreeStore();
 
 	function handleClick(menuInfo: any) {
-		console.log("menuInfo", menuInfo.key);
+		addMesh(menuInfo.key);
 	}
 
 	return (

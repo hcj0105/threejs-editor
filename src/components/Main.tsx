@@ -20,7 +20,7 @@ const Main = () => {
 	}, []);
 
 	return (
-		<div ref={editRef} className='w-[1000px] border-r border-[#000]'></div>
+		<div ref={editRef} className='w-[85vw] border-r border-[#000]'></div>
 	);
 };
 

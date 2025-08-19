@@ -5,8 +5,19 @@ import { MeshTypes } from "../store";
 
 import type { ThreeStoreStateData } from "../store";
 
+function getWindowSize() {
+	// 主要内容宽度
+	const width = window.innerWidth - window.innerWidth * 0.15;
+	// 减去菜单高度
+	const height = window.innerHeight - 60;
+
+	return { height, width };
+}
+
 export function init(dom: HTMLElement, data: ThreeStoreStateData) {
 	const scene = new THREE.Scene();
+
+	const { width, height } = getWindowSize();
 
 	const axesHelper = new THREE.AxesHelper(500);
 	scene.add(axesHelper);
@@ -19,32 +30,8 @@ export function init(dom: HTMLElement, data: ThreeStoreStateData) {
 	scene.add(ambientLight);
 
 	// 创建网格格子，大小为 1000
-	const gridHelper = new THREE.GridHelper(1000);
+	const gridHelper = new THREE.GridHelper(width);
 	scene.add(gridHelper);
-
-	// 创建几何体并添加到场景中
-	data.meshArr.forEach((item) => {
-		if (item.type === MeshTypes.Box) {
-			const {
-				material: { color },
-				width,
-				height,
-				depth
-			} = item.props;
-
-			const geometry = new THREE.BoxGeometry(width, height, depth);
-			const material = new THREE.MeshBasicMaterial({
-				color
-			});
-			const mesh = new THREE.Mesh(geometry, material);
-			scene.add(mesh);
-		}
-	});
-
-	// 主要内容宽度
-	const width = 1000;
-	// 减去菜单高度
-	const height = window.innerHeight - 60;
 
 	const camera = new THREE.PerspectiveCamera(60, width / height, 1, 10000);
 	camera.position.set(500, 500, 500);
@@ -63,11 +50,9 @@ export function init(dom: HTMLElement, data: ThreeStoreStateData) {
 	dom.append(renderer.domElement);
 
 	window.onresize = function () {
-		const width = 1000;
-		const height = window.innerHeight - 60;
+		const { height, width } = getWindowSize();
 
 		renderer.setSize(width, height);
-
 		camera.aspect = width / height;
 		camera.updateProjectionMatrix();
 	};

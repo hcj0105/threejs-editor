@@ -65,7 +65,30 @@ type ThreeStoreState = {
 const useThreeStore = create<ThreeStoreState>((set) => {
 	return {
 		data: {
-			meshArr: [createBox()]
+			meshArr: [
+				{
+					id: 1,
+					type: "Box",
+					name: "Box" + 1,
+					props: {
+						// Box的属性宽、高、深
+						width: 500,
+						height: 200,
+						depth: 200,
+						material: {
+							// 材质
+							color: "orange" // 颜色
+						},
+						// Box 初始位置
+						position: {
+							x: 500,
+							y: 100,
+							z: 0
+						}
+					}
+				},
+				createBox()
+			]
 		},
 		/**
 		 * 添加几何体
