@@ -1,5 +1,5 @@
 import { Menu as AntDMenu } from "antd";
-import { useThreeStore } from "../store";
+import { MeshTypes, useThreeStore } from "../store";
 
 const items = [
 	{
@@ -10,8 +10,8 @@ const items = [
 				type: "group",
 				label: "Mesh",
 				children: [
-					{ label: "立方体", key: "Box" },
-					{ label: "圆柱", key: "Cylinder" }
+					{ label: "立方体", key: MeshTypes.Box },
+					{ label: "圆柱", key: MeshTypes.Cylinder }
 				]
 			},
 			{
@@ -23,6 +23,11 @@ const items = [
 				]
 			}
 		]
+	},
+	{
+		label: "Delete",
+		key: "delete",
+		children: []
 	}
 ];
 
