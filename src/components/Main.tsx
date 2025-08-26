@@ -7,7 +7,7 @@ const Main = () => {
 	const editRef = useRef<HTMLDivElement>(null);
 	const sceneRef = useRef<THREE.Scene>(null);
 
-	const { data, setSelectedObj } = useThreeStore();
+	const { data, setSelectedObj, selectedObj, removeMesh } = useThreeStore();
 
 	function onSelected(obj: THREE.Object3D | null) {
 		setSelectedObj(obj);
@@ -67,6 +67,21 @@ const Main = () => {
 			}
 		});
 	}, [data]);
+
+	useEffect(() => {
+		function handleKeydown(e: KeyboardEvent) {
+			if (e.key === "Backspace") {
+				sceneRef.current?.remove(selectedObj!);
+				removeMesh(selectedObj!);
+			}
+		}
+
+		window.addEventListener("keydown", handleKeydown);
+
+		return () => {
+			window.removeEventListener("keydown", handleKeydown);
+		};
+	}, [selectedObj]);
 
 	return <div ref={editRef} className='w-[85vw] border-r border-[#000]'></div>;
 };
