@@ -7,7 +7,8 @@ const Main = () => {
 	const editRef = useRef<HTMLDivElement>(null);
 	const sceneRef = useRef<THREE.Scene>(null);
 
-	const { data, setSelectedObj, selectedObj, removeMesh } = useThreeStore();
+	const { data, setSelectedObj, selectedObj, removeMesh, updateMeshPostion } =
+		useThreeStore();
 
 	function onSelected(obj: THREE.Object3D | null) {
 		setSelectedObj(obj);
@@ -15,7 +16,10 @@ const Main = () => {
 
 	useEffect(() => {
 		if (editRef.current) {
-			const { scene } = init(editRef.current, onSelected);
+			const { scene } = init(editRef.current, {
+				onSelected,
+				updateMeshPostion
+			});
 			sceneRef.current = scene;
 		}
 

@@ -18,6 +18,7 @@ type ThreeStoreState = {
 	setSelectedObj: (obj: THREE.Object3D | null) => void;
 	addMesh: (type: keyof typeof MeshTypes) => void;
 	removeMesh: (obj: THREE.Object3D) => void;
+	updateMeshPostion: (name: string, obj: THREE.Object3D) => void;
 };
 
 const useThreeStore = create<ThreeStoreState>((set) => {
@@ -60,6 +61,21 @@ const useThreeStore = create<ThreeStoreState>((set) => {
 					data: {
 						...state.data,
 						meshArr: state.data.meshArr.filter((item) => item.name !== obj.name)
+					}
+				};
+			});
+		},
+		updateMeshPostion(name: string, obj: THREE.Object3D) {
+			set((state) => {
+				return {
+					data: {
+						...state.data,
+						meshArr: state.data.meshArr.map((item) => {
+							if (item.name === name) {
+								item.props.position = obj.position;
+							}
+							return item;
+						})
 					}
 				};
 			});

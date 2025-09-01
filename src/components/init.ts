@@ -5,7 +5,8 @@ import {
 	GammaCorrectionShader,
 	OutlinePass,
 	RenderPass,
-	ShaderPass
+	ShaderPass,
+	TransformControls
 } from "three/examples/jsm/Addons.js";
 
 function getWindowSize() {
@@ -17,7 +18,14 @@ function getWindowSize() {
 	return { height, width };
 }
 
-export function init(dom: HTMLElement, onSelected: (obj: THREE.Object3D | null) => void) {
+type InitActions = {
+	onSelected: (obj: THREE.Object3D | null) => void;
+	updateMeshPostion: (name: string, obj: THREE.Object3D) => void;
+};
+
+export function init(dom: HTMLElement, actions: InitActions) {
+	const { onSelected, updateMeshPostion } = actions;
+
 	const scene = new THREE.Scene();
 
 	const { width, height } = getWindowSize();
@@ -64,9 +72,35 @@ export function init(dom: HTMLElement, onSelected: (obj: THREE.Object3D | null) 
 	composer.addPass(gammaPass);
 	// end
 
-	function render() {
+	// 相机控制器
+	const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+	// 几何体控制
+	const transformControls = new TransformControls(camera, renderer.domElement);
+	// 添加操作指示器
+	const transformHelper = transformControls.getHelper();
+	scene.add(transformHelper);
+
+	transformControls.addEventListener("dragging-changed", (e) => {
+		// 在操作几何体的时候，禁用相机控制
+		orbitControls.enabled = !e.value;
+	});
+
+	transformControls.addEventListener("change", () => {
+		// 获取操作的对象
+		const obj = transformControls.object;
+		if (obj) {
+			updateMeshPostion(obj.name, obj);
+		}
+	});
+
+	function render(time: number = 1000) {
 		// renderer.render(scene, camera);
+		// 渲染后期通道
 		composer.render();
+
+		transformControls.update(time);
+
 		requestAnimationFrame(render);
 	}
 
@@ -93,20 +127,32 @@ export function init(dom: HTMLElement, onSelected: (obj: THREE.Object3D | null) 
 
 		const rayCaster = new THREE.Raycaster();
 		rayCaster.setFromCamera(new THREE.Vector2(x, y), camera);
-		const intersections = rayCaster.intersectObjects(scene.children);
+
+		// 只处理 Box 和 Cylinder
+		const objs = scene.children.filter((item) => {
+			return item.name.startsWith("Box") || item.name.startsWith("Cylinder");
+		});
+
+		const intersections = rayCaster.intersectObjects(objs);
 
 		if (intersections.length) {
 			const obj = intersections[0].object;
+			// 给选中的3D对象添加外边框效果
 			outlinePass.selectedObjects = [obj];
-			onSelected(obj)
+			// 更新选中的对象到 store 当中
+			onSelected(obj);
+			// 给选中的对象添加操作控制器
+			transformControls.attach(obj);
 		} else {
+			// 取消选中对象上的外边框
 			outlinePass.selectedObjects = [];
-			onSelected(null)
+			// 删除store中保存的选中对象
+			onSelected(null);
+			// 删除选中对象的操作控制器
+			transformControls.detach();
 		}
 	});
 	// end
-
-	const controls = new OrbitControls(camera, renderer.domElement);
 
 	return {
 		scene
